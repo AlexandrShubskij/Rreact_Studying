@@ -22,7 +22,7 @@ function App() {
 
 	
 	const createPost = (newPost) => {
-		setPosts(...posts, newPost)
+		setPosts([...posts, newPost])
 	}
 
 	
