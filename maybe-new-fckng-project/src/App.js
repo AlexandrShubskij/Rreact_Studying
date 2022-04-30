@@ -1,12 +1,12 @@
 /** @format */
 
-import React, { useRef, useState } from 'react';
+import React, {useState} from 'react';
 import ClassCounter from './components/ClassCounter';
 import Counter from './components/Counter';
+import PostForm from './components/PostForm';
 import PostItem from './components/PostItem';
 import PostList from './components/PostList';
-import MyButton from './components/UI/button/MyButton';
-import MyInput from './components/UI/input/MyInput';
+
 import './styles/App.css';
 
 function App() {
@@ -20,35 +20,16 @@ function App() {
 		{ id: 7, title: 'Javascript 6', body: 'Description' },
 	]);
 
-	const [post, setPost] = useState({title: '', body: ''});
+	
+	const createPost = (newPost) => {
+		setPosts(...posts, newPost)
+	}
 
-
-	const addNewPost = (e) => {
-		e.preventDefault()
-
-		setPosts([...posts, {...post, id: Date.now()}])
-
-		setPost({title: '', body: ''})
-	};
+	
 
 	return (
 		<div className='App'>
-			<form>
-				<MyInput
-					value={post.title}
-					onChange={(e) => setPost({...post, title: e.target.value})}
-					type='text'
-					placeholder='Post name'
-				/>
-				<MyInput
-					value={post.body}
-					onChange={(e) => setPost({...post, body: e.target.value})}
-					type='text'
-					placeholder='Post description'
-				/>
-				<MyButton onClick={addNewPost}>Create post</MyButton>
-			</form>
-
+			<PostForm create={createPost}/>
 			<PostList posts={posts} title='Posts about JS' />
 		</div>
 	);
