@@ -1,11 +1,13 @@
 /** @format */
 
-import React, { useState } from 'react';
+import React, { useMemo, useState } from 'react';
 import ClassCounter from './components/ClassCounter';
 import Counter from './components/Counter';
+import PostFilter from './components/PostFilter';
 import PostForm from './components/PostForm';
 import PostItem from './components/PostItem';
 import PostList from './components/PostList';
+import MyInput from './components/UI/input/MyInput';
 import MySelect from './components/UI/select/MySelect';
 
 import './styles/App.css';
@@ -21,7 +23,20 @@ function App() {
 		{ id: 7, title: 'Pascal', body: 'Пасцал' },
 	]);
 
-	const [selectedSort, setSelectedSort] = useState('')
+	const [filter, setFilter] = useState({sort: '', query: ''})
+
+
+	const sortedPosts = useMemo(() => {
+		console.log('Func worked')
+		if (filter.sort) {
+			return [...posts].sort((a, b) => a[filter.sort].localeCompare(b[filter.sort]))
+		}
+		return posts
+	}, [filter.sort, posts])
+
+	const sortedAndSearchedPosts = useMemo(() => {
+		return sortedPosts.filter(post => post.title.toLowerCase().includes(filter.query))
+	}, [filter.query, sortedPosts])
 
 	const createPost = (newPost) => {
 		setPosts([...posts, newPost]);
@@ -31,33 +46,15 @@ function App() {
 		setPosts(posts.filter((p) => p.id !== post.id));
 	};
 
-	const sortPosts = (sort) => {
-		setSelectedSort(sort);
-		setPosts([...posts].sort((a, b) => a[sort].localeCompare(b[sort])))
-	}
-
 	return (
 		<div className='App'>
 			<PostForm create={createPost} />
 			<hr style={{margin: '15px 0'}}/>
-			<div>
-				<MySelect
-					value={selectedSort}
-					onChange={sortPosts}
-					defaultValue='Sort by'
-					options={[
-						{value: 'title', name: 'By name'},
-						{value: 'body', name: 'By description'},
-					]}
-				/>
-			</div>
-			{posts.length ? (
-				<PostList remove={removePost} posts={posts} title='Posts about JS' />
-			) : (
-				<h1 style={{ textAlign: 'center', color: 'teal' }}>
-					Posts not find!
-				</h1>
-			)}
+			<PostFilter
+				filter = {filter}
+				setFilter = {setFilter}
+			/>
+			<PostList remove={removePost} posts={sortedAndSearchedPosts} title='Posts about programming languages' />
 		</div>
 	);
 }
